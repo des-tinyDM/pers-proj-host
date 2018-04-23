@@ -29,7 +29,7 @@ class ProfilePage extends Component {
       this.props.first_name || this.props.user.first_name,
       this.props.last_name || this.props.user.last_name,
       this.props.address || this.props.user.address,
-      this.props.city || this.props.user.city,
+      this.props.cityjoined || this.props.user.city,
       this.props.stateName || this.props.user.stateName,
       this.props.zip || this.props.user.zip,
       this.props.email || this.props.user.email,

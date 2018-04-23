@@ -11,6 +11,7 @@ const DashHeader = props => {
       <Link to="/profile">My Profile</Link>
       <Link to="/mycampaign">My Campaign</Link>
       <Link to="/mycampaign/events">Events</Link>
+      <Link to="/mycampaign/data">Data</Link>
     </nav>
   );
 };

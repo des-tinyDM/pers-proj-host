@@ -39,7 +39,7 @@ const createCampaign = (req, res) => {
       user_id
     ])
     .then(response => {
-      console.log(response);
+      // console.log(response);
       res.status(200).json(response);
     })
     .catch(console.log);
@@ -86,10 +86,44 @@ const addCampaigns = (req, res) => {
 
 const getCampaignsJoined = (req, res) => {
   const db = req.app.get("db");
-  console.log(req.params);
+  // console.log(req.params);
 
   db.campaign
     .getCampaignJoined(req.params.user_id)
+    .then(response => {
+      // console.log(response);
+      res.status(200).json(response);
+    })
+    .catch(err => {
+      // console.log(err);
+      res.status(500).json(err);
+    });
+};
+
+const getEvents = (req, res) => {
+  const db = req.app.get("db");
+  const { campaign_id } = req.params;
+  // console.log(req.params);
+
+  db.campaign
+    .getCampaignEvents(campaign_id)
+    .then(response => {
+      // console.log(response);
+      res.status(200).json(response);
+    })
+    .catch(err => {
+      // console.log(err);
+      res.status(500).json(err);
+    });
+};
+
+const userJoinsCampaign = (req, res) => {
+  const db = req.app.get("db");
+  const { campaign_id } = req.params;
+  const { user_id, role } = req.body;
+
+  db.campaign
+    .userJoinsCampaign([campaign_id, user_id, role])
     .then(response => {
       console.log(response);
       res.status(200).json(response);
@@ -100,9 +134,63 @@ const getCampaignsJoined = (req, res) => {
     });
 };
 
+const getVolRole = (req, res) => {
+  const db = req.app.get("db");
+  const { campaign_id, user_id } = req.params;
+
+  db.campaign
+    .getVolRole([campaign_id, user_id])
+    .then(response => {
+      // console.log(response);
+      res.status(200).json(response);
+    })
+    .catch(err => {
+      // console.log(err);
+      res.status(500).json(err);
+    });
+};
+
+const scheduleUserAsVol = (req, res) => {
+  const db = req.app.get("db");
+  const { campaign_id, event_id, user_id } = req.body;
+
+  db.campaign
+    .scheduleUserAsVol([campaign_id, event_id, user_id])
+    .then(scheduled => {
+      {
+        console.log(scheduled);
+        res.status(200).json(scheduled);
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+};
+
+const getScheduledEvents = (req, res) => {
+  const db = req.app.get("db");
+  console.log(req.params);
+
+  db.campaign
+    .getScheduledEvents([req.params.user_id])
+    .then(scheduledEvents => {
+      res.status(200).json(scheduledEvents);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(response);
+    });
+};
+
 module.exports = {
   getCampaigns,
   createCampaign,
-  getCampaignsJoined
+  getCampaignsJoined,
+  userJoinsCampaign,
+  getVolRole,
+  getEvents,
+  scheduleUserAsVol,
+  getScheduledEvents
   // updateCampaignInfo
 };

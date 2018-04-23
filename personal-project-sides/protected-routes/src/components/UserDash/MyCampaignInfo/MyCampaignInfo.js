@@ -1,8 +1,16 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { getCampaignsJoined } from "../../../ducks/campaignReducer";
+import {
+  getCampaigns,
+  getCampaignsJoined,
+  getUserRole
+} from "../../../ducks/campaignReducer";
 import { getUser } from "../../../ducks/userReducer";
+import MyCampaignCard from "./MyCampaignCard";
+
+import "./MyCampaignCard.css";
+import CampaignList from "../../CampaignList/CampaignList";
 
 class MyCampaignInfo extends Component {
   constructor(props) {
@@ -10,24 +18,48 @@ class MyCampaignInfo extends Component {
     this.state = {};
   }
   componentDidMount() {
-    this.props.getUser().then(() => {
-      this.props.getCampaignsJoined(this.props.user.user_id);
+    this.props.getCampaignsJoined(this.props.user.user_id).then(() => {
+      this.props.getCampaigns();
     });
   }
   render() {
-    console.log(this.props);
-    return <div>These are your campaigns:</div>;
+    console.log(this.props.joined[0].role);
+
+    let { joined } = this.props;
+    return (
+      <div>
+        {!joined[0] && <CampaignList user_id={this.props.user.user_id} />}
+        {joined[0] &&
+          joined.map((e, i) => {
+            return (
+              <MyCampaignCard
+                key={i}
+                name={e.name}
+                organization={e.organization}
+                orglogo={e.orglogo}
+                desc={e.description}
+                type={e.type}
+                scope={e.scope}
+                campaign_id={e.campaign_id}
+                role={this.props.joined[i].role}
+              />
+            );
+          })}
+      </div>
+    );
   }
 }
-
 const mapStateToProps = state => {
   return {
-    ...state.userReducer,
-    ...state.campaignReducer,
-    joined: state.campaignReducer.joined
+    user: state.userReducer.user,
+    joined: state.campaignReducer.joined,
+    role: state.campaignReducer.role
   };
 };
 
-export default connect(mapStateToProps, { getCampaignsJoined, getUser })(
-  MyCampaignInfo
-);
+export default connect(mapStateToProps, {
+  getCampaigns,
+  getCampaignsJoined,
+  getUser,
+  getUserRole
+})(MyCampaignInfo);

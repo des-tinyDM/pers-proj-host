@@ -9,7 +9,7 @@ import LandingPage from "./components/LandingPage";
 import ProfilePage from "./components/UserDash/ProfilePage/ProfilePage";
 import { getUser } from "./ducks/userReducer";
 import Forbidden from "./components/Forbidden";
-import Campaigns from "./components/CampaignList/CampaignList";
+import CampaignList from "./components/CampaignList/CampaignList";
 import MyCampaignInfo from "./components/UserDash/MyCampaignInfo/MyCampaignInfo";
 
 class App extends Component {
@@ -48,19 +48,20 @@ class App extends Component {
         </header>
         <Switch>
           <Route
-            path="/"
-            component={this.props.user.authid ? UserDash : LandingPage}
-          />
-
-          <Route
+            exact
             path="/campaigns"
             render={() =>
               this.props.user.authid ? (
-                <Campaigns />
+                <CampaignList />
               ) : (
                 <h1>Login to View Campaigns</h1>
               )
             }
+          />
+
+          <Route
+            path="/"
+            component={this.props.user.authid ? UserDash : Forbidden}
           />
         </Switch>
       </div>

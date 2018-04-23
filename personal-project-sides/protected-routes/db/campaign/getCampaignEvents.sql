@@ -1,0 +1,1 @@
+Select * from events where campaign_id = $1;

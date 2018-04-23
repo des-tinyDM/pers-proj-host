@@ -11,7 +11,12 @@ const {
   getCampaigns,
   getCampaignsJoined,
   createCampaign,
-  updateCampaignInfo
+  updateCampaignInfo,
+  userJoinsCampaign,
+  getVolRole,
+  getEvents,
+  scheduleUserAsVol,
+  getScheduledEvents
 } = require(`${__dirname}/controllers/campaignController`);
 const {
   strategy,
@@ -95,7 +100,12 @@ app.put(`/api/volunteer/:id`, updateProfile);
 //ENDPOINTS
 app.get(`/api/campaigns`, getCampaigns);
 app.get(`/api/campaigns/joined/:user_id`, getCampaignsJoined);
+app.get(`/api/campaigns/:campaign_id/:user_id`, getVolRole);
+app.get(`/api/campaigns/:campaign_id`, getEvents);
+app.get(`/api/camapaigns/events/:user_id`, getScheduledEvents);
 app.post(`/api/campaign`, createCampaign);
+app.post(`/api/campaigns/join/:campaign_id`, userJoinsCampaign);
+app.post(`/api/campaigns/events`, scheduleUserAsVol);
 
 // app.put(`/api/campaign/:id`, updateCampaignInfo);
 

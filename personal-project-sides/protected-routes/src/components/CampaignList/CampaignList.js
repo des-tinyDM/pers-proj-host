@@ -4,54 +4,44 @@ import { connect } from "react-redux";
 import { getCampaigns } from "../../ducks/campaignReducer";
 
 import CampaignCard from "./CampaignCard/CampaignCard";
-import CampaignForm from "./CampaignForm/CampaignForm";
 
 import "./CampaignList.css";
 
 class CampaignList extends Component {
   constructor() {
     super();
-    this.state = {
-      isCreating: false
-    };
-    this.createSwitch = this.createSwitch.bind(this);
+    this.state = {};
   }
 
   componentDidMount() {
     this.props.getCampaigns();
-    console.log(this.props);
-  }
-  createSwitch() {
-    !this.state.isCreating
-      ? this.setState({ isCreating: true })
-      : this.setState({ isCreating: false });
   }
 
   render() {
     let campaigns = this.props.campaigns;
-    const isCreatingCampaign = this.state.isCreating;
+    console.log(`campaigns`, campaigns);
 
     return (
       <div className="Campaign-dash">
         <div>
           <h1>Active Campaigns</h1>
-          <button onClick={this.createSwitch}>Add Campaign</button>
-          <div className="campaign-form-container">
-            {isCreatingCampaign ? <CampaignForm /> : null}
-          </div>
+          <div className="campaign-form-container" />
         </div>
         <div>
           {campaigns &&
             campaigns.map((campaign, index) => {
               return (
-                <CampaignCard
-                  key={index}
-                  name={campaign.name}
-                  orglogo={campaign.orglogo}
-                  organization={campaign.organization}
-                  type={campaign.type}
-                  description={campaign.description}
-                />
+                <div key={index}>
+                  <CampaignCard
+                    user_id={this.props.user_id}
+                    campaign_id={campaign.campaign_id}
+                    name={campaign.name}
+                    orglogo={campaign.orglogo}
+                    organization={campaign.organization}
+                    type={campaign.type}
+                    description={campaign.description}
+                  />
+                </div>
               );
             })}
         </div>

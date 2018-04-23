@@ -104,7 +104,7 @@ const initialState = {
 };
 
 export default function userReducer(state = initialState, action) {
-  console.log(action.type, action.payload);
+  // console.log(action.type, action.payload);
   switch (action.type) {
     case `${GET_USER}_FULFILLED`:
     case `${SUBMIT_USER_UPDATE}_FULFILLED`:
