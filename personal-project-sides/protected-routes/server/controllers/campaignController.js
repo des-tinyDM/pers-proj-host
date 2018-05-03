@@ -145,7 +145,7 @@ const getVolRole = (req, res) => {
       res.status(200).json(response);
     })
     .catch(err => {
-      // console.log(err);
+      console.log(err);
       res.status(500).json(err);
     });
 };
@@ -157,10 +157,24 @@ const scheduleUserAsVol = (req, res) => {
   db.campaign
     .scheduleUserAsVol([campaign_id, event_id, user_id])
     .then(scheduled => {
-      {
-        console.log(scheduled);
-        res.status(200).json(scheduled);
-      }
+      // console.log(scheduled);
+      res.status(200).json(scheduled);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+};
+
+const getVolunteers = (req, res) => {
+  const db = req.app.get("db");
+  const { event_id } = req.params;
+
+  db.campaign
+    .getScheduledVolunteers([event_id])
+    .then(response => {
+      // console.log(response);
+      res.status(200).json(response);
     })
     .catch(err => {
       console.log(err);
@@ -171,15 +185,54 @@ const scheduleUserAsVol = (req, res) => {
 const getScheduledEvents = (req, res) => {
   const db = req.app.get("db");
   console.log(req.params);
+  console.dir(req.params);
 
   db.campaign
-    .getScheduledEvents([req.params.user_id])
+    .getScheduledEvents(req.params.user_id)
     .then(scheduledEvents => {
       res.status(200).json(scheduledEvents);
     })
     .catch(err => {
       console.log(err);
-      res.status(500).json(response);
+      res.status(500).json(err);
+    });
+};
+
+const createEvent = (req, res) => {
+  const db = req.app.get("db");
+  console.log(req.params, req.body);
+  let { campaign_id } = req.params;
+  let {
+    name,
+    desc,
+    location,
+    address,
+    city,
+    stateName,
+    zip,
+    start,
+    end
+  } = req.body;
+
+  db.campaign
+    .createEvent([
+      campaign_id,
+      name,
+      desc,
+      location,
+      address,
+      city,
+      stateName,
+      zip,
+      start,
+      end
+    ])
+    .then(response => {
+      console.log(response);
+      res.status(200).json(response);
+    })
+    .catch(err => {
+      console.log(err), res.status(500).json(err);
     });
 };
 
@@ -191,6 +244,8 @@ module.exports = {
   getVolRole,
   getEvents,
   scheduleUserAsVol,
-  getScheduledEvents
+  getScheduledEvents,
+  getVolunteers,
+  createEvent
   // updateCampaignInfo
 };

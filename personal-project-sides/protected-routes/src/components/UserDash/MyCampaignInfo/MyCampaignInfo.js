@@ -23,7 +23,7 @@ class MyCampaignInfo extends Component {
     });
   }
   render() {
-    console.log(this.props.joined[0].role);
+    // console.log(this.props.joined[0].role);
 
     let { joined } = this.props;
     return (

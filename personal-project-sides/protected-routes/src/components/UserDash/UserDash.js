@@ -9,12 +9,14 @@ import {
   getEvents,
   getScheduledEvents
 } from "../../ducks/campaignReducer";
+import { getCommsData } from "../../ducks/commsReducer";
 import DashHeader from "./DashHeader";
 import MyCampaignInfo from "./MyCampaignInfo/MyCampaignInfo";
 import Forbidden from "../Forbidden";
 import ProfilePage from "./ProfilePage/ProfilePage";
 import MyCampaignData from "./MyCampaignData/MyCampaignData";
 import MyCampaignEvents from "./MyCampaignEvents/MyCampaignEvents";
+import FullEventPage from "./MyCampaignEvents/FullEventPage/FullEventPage";
 
 class UserDash extends Component {
   constructor(props) {
@@ -25,17 +27,26 @@ class UserDash extends Component {
   componentDidMount() {
     this.props
       .getCampaignsJoined(this.props.user.user_id)
-      .then(() => this.props.getEvents(this.props.joined[0].campaign_id))
-      .then(() => this.props.getScheduledEvents(this.props.user.user_id));
+      .then(
+        this.props.joined[0]
+          ? () => this.props.getEvents(this.props.joined[0].campaign_id)
+          : null
+      )
+      .then(() => this.props.getScheduledEvents(this.props.user.user_id))
+      .then(
+        this.props.joined[0]
+          ? () =>
+              this.props.getCommsData(this.props.joined[0].campaign_id, "VR")
+          : null
+      );
   }
   render() {
     return (
       <div className="user-dash">
-        <DashHeader user={this.props.user} />
+        <div className="dash-content">CONTENT</div>
 
         <Switch>
           <Route
-            exact
             path="/profile"
             render={() =>
               this.props.user.authid ? (
@@ -74,12 +85,27 @@ class UserDash extends Component {
             }
           />
           <Route
+            exact
             path="/mycampaign"
             render={() =>
               this.props.user.authid ? (
                 <MyCampaignInfo
                   user={this.props.user}
                   role={this.props.joined.role}
+                />
+              ) : (
+                <h1>Why haven't you joined a campaign? Log in to volunteer!</h1>
+              )
+            }
+          />
+          <Route
+            path="/campaigns/events/:event_id"
+            render={() =>
+              this.props.user.authid ? (
+                <FullEventPage
+                  user={this.props.user}
+                  role={this.props.joined.role}
+                  events={this.props.events}
                 />
               ) : (
                 <h1>Why haven't you joined a campaign? Log in to volunteer!</h1>
@@ -97,7 +123,8 @@ const mapStateToProps = state => {
     ...state.userReducer,
     ...state.campaignReducer,
     joined: state.campaignReducer.joined,
-    scheduled: state.campaignReducer.scheduled
+    scheduled: state.campaignReducer.scheduled,
+    commsList: state.commsReducer.commsList
   };
 };
 
@@ -106,6 +133,7 @@ export default withRouter(
     getUser,
     getCampaignsJoined,
     getEvents,
-    getScheduledEvents
+    getScheduledEvents,
+    getCommsData
   })(UserDash)
 );

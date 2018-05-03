@@ -1,4 +1,5 @@
 import React from "react";
+import heroImage from "./heroImage.png";
 
 const Forbidden = () => {
   return (
@@ -8,9 +9,7 @@ const Forbidden = () => {
         companies, we take our data security seriously. The FBI have been
         dispatched.
       </h1>
-      <img
-        src={`https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Federal_Bureau_of_Investigation.svg/600px-Federal_Bureau_of_Investigation.svg.png`}
-      />
+      <img src={heroImage} />
       <p>We will call them off if you log in now.</p>
     </div>
   );

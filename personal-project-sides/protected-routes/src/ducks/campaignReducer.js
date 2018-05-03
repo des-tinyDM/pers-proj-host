@@ -15,6 +15,8 @@ const UPDATE_CAMPAIGN_INFO = "UPDATE_CAMPAIGN_INFO";
 const USER_JOINS_CAMPAIGN = "USER_JOINS_CAMPAIGN";
 const SCHEDULE_USER_AS_VOL = "SCHEDULE_USER_AS_VOL";
 const GET_SCHEDULED = "GET_SCHEDULED";
+const GET_VOLS_SCHEDULED = "GET_VOLS_SCHEDULED";
+const CREATE_EVENT = "CREATE_EVENT";
 
 const initialState = {
   campaigns: [],
@@ -27,7 +29,8 @@ const initialState = {
   scope: "",
   role: "",
   events: [],
-  scheduled: []
+  scheduled: [],
+  volsScheduled: []
 };
 
 export function getCampaigns() {
@@ -93,6 +96,16 @@ export function getEvents(campaign_id) {
   };
 }
 
+export function getVolunteers(event_id) {
+  return {
+    type: GET_VOLS_SCHEDULED,
+    payload: axios
+      .get(`/api/events/volunteers/${event_id}`)
+      .then(response => response.data)
+      .catch(err => console.log(err))
+  };
+}
+
 export function scheduleUserAsVol(campaign_id, event_id, user_id) {
   return {
     type: SCHEDULE_USER_AS_VOL,
@@ -126,6 +139,35 @@ export function submitCampaign(
       description,
       user_id
     })
+  };
+}
+export function createEvent(
+  campaign_id,
+  name,
+  desc,
+  location,
+  address,
+  city,
+  stateName,
+  zip,
+  start,
+  end
+) {
+  return {
+    type: CREATE_EVENT,
+    payloaad: axios
+      .post(`/api/${campaign_id}/events`, {
+        name,
+        desc,
+        location,
+        address,
+        city,
+        stateName,
+        zip,
+        start,
+        end
+      })
+      .then(response => response.data)
   };
 }
 
@@ -188,12 +230,12 @@ export function updateCampaignLogo(orglogo) {
 }
 
 export default function campaignReducer(state = initialState, action) {
-  // console.log(action.type, action.payload);
+  console.log(action.type, action.payload);
   switch (action.type) {
     case `${GET_CAMPAIGNS}_PENDING`:
     case `${GET_JOINED}_PENDING`:
     case `${GET_EVENTS}_PENDING`:
-
+    case `${GET_VOLS_SCHEDULED}_PENDING`:
     case `${GET_SCHEDULED}_PENDING`:
       return Object.assign({}, state, { isLoading: true });
     case `${GET_CAMPAIGNS}_FULFILLED`:
@@ -233,6 +275,9 @@ export default function campaignReducer(state = initialState, action) {
         isSubmitting: false,
         campaigns: action.payload.data
       });
+
+    case `${CREATE_EVENT}_FULFILLED`:
+      return Object.assign({}, state, { events: action.payload.data });
     case `${UPDATE_CAMPAIGN_INFO}_FULFILLED`:
       return Object.assign({}, state, { campaigns: action.payload.data });
     case `${GET_JOINED}_FULFILLED`:
@@ -246,6 +291,11 @@ export default function campaignReducer(state = initialState, action) {
       return Object.assign({}, state, {
         isSubmitting: false,
         scheduled: action.payload
+      });
+    case `${GET_VOLS_SCHEDULED}_FULFILLED`:
+      console.log(action.type, action.payload);
+      return Object.assign({}, state, {
+        volsScheduled: action.payload
       });
     default:
       return state;

@@ -15,4 +15,9 @@
 
 .profile {
   width: 80vw;
+  display: flex;
+}
+
+.info {
+  line-height: 20px;
 }

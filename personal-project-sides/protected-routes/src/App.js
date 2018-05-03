@@ -3,67 +3,65 @@ import "./App.css";
 import { Route, Switch, Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
-import logo from "./logo.jpg";
+import logo from "./headerlogo.png";
+import Header from "./components/Header/Header";
+import Footer from "./components/Footer/Footer";
 import UserDash from "./components/UserDash/UserDash";
 import LandingPage from "./components/LandingPage";
 import ProfilePage from "./components/UserDash/ProfilePage/ProfilePage";
 import { getUser } from "./ducks/userReducer";
+import { getCampaigns } from "./ducks/campaignReducer";
 import Forbidden from "./components/Forbidden";
 import CampaignList from "./components/CampaignList/CampaignList";
 import MyCampaignInfo from "./components/UserDash/MyCampaignInfo/MyCampaignInfo";
+import CampaignLogo from "./components/CampaignLogo";
+import DashHeader from "./components/UserDash/DashHeader";
 
 class App extends Component {
   componentDidMount() {
     this.props.getUser();
-    // console.log(this.props);
+    this.props.getCampaigns();
+    console.log(this.props);
   }
 
   render() {
-    // console.log(this.props.user);
+    console.log(this.props);
 
     return (
       <div className="App">
-        <header className="website-header">
-          <img
-            className="logo"
-            src="https://arizonachristian.edu/wp-content/uploads/2017/06/logo-placeholder-300x120.png"
-            alt="The website's logo."
-          />
-          <div>About</div>
-          <div>Contact</div>
-          <div>OtherThing</div>
-          <div>
-            {this.props.user.authid ? (
-              <div>
-                <a href={process.env.REACT_APP_LOGOUT}>
-                  <button>Logout</button>
-                </a>
-              </div>
-            ) : (
-              <a href={process.env.REACT_APP_LOGIN}>
-                <button>Login to Volunteer</button>
-              </a>
-            )}
+        <DashHeader />
+        <div className="app-container">
+          <div className="header-container">
+            <Header />
           </div>
-        </header>
-        <Switch>
-          <Route
-            exact
-            path="/campaigns"
-            render={() =>
-              this.props.user.authid ? (
-                <CampaignList />
-              ) : (
-                <h1>Login to View Campaigns</h1>
-              )
-            }
-          />
-
-          <Route
-            path="/"
-            component={this.props.user.authid ? UserDash : Forbidden}
-          />
-        </Switch>
+          <div className="app-content">
+            <Switch>
+              <Route
+                exact
+                path="/campaigns"
+                render={() =>
+                  this.props.user.authid ? (
+                    <CampaignList />
+                  ) : (
+                    <h1>Login to View Campaigns</h1>
+                  )
+                }
+              />
+              <Route
+                path="/"
+                render={() =>
+                  this.props.user.authid ? (
+                    <UserDash />
+                  ) : (
+                    <LandingPage campaigns={this.props.campaigns} />
+                  )
+                }
+              />
+              
+            </Switch>
+          </div>
+        </div>
+        {/* <Footer campaigns={campaigns} /> */}
       </div>
     );
   }
@@ -71,7 +69,10 @@ class App extends Component {
 
 const mapStateToProps = state => {
   return {
-    ...state.userReducer
+    ...state.userReducer,
+    ...state.campaignReducer
   };
 };
-export default withRouter(connect(mapStateToProps, { getUser })(App));
+export default withRouter(
+  connect(mapStateToProps, { getUser, getCampaigns })(App)
+);

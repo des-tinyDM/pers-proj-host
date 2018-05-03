@@ -6,6 +6,8 @@ import { getEvents, scheduleUserAsVol } from "../../../ducks/campaignReducer";
 import EventsCard from "./EventsCard";
 import moment from "moment";
 import ScheduledEvents from "./ScheduledEventCard";
+import MyCalendar from "./Calandar";
+import EventCreator from "./EventCreator";
 
 class MyCampaignEvents extends Component {
   constructor(props) {
@@ -81,15 +83,35 @@ class MyCampaignEvents extends Component {
   }
 
   componentDidMount() {
-    this.props.getEvents(this.props.joined[0].campaign_id);
-    console.log(`LOOK HERE`, this.props);
+    this.props.joined[0]
+      ? this.props.getEvents(this.props.joined[0].campaign_id)
+      : null;
   }
   render() {
+    // let starting = e.date_start
+    //   .split("-")
+    //   .map((e, i, arr) => (i === arr.length - 1 ? e.substring(0, 2) : e))
+    //   .join(",");
+    // {
+    //   console.log(starting);
+    // }
+
+    // const eventsToCal = Object.keys(this.props.events).reduce(function(
+    //   prev,
+    //   curr
+    // ) {
+    //   previous[curr.data_start] = `new Date(${starting})`;
+    //   return previous;
+    // });
+
+    // console.log(eventsToCal);
+
     let eventsMapped = this.props.events.map((e, i) => {
-      let sday = moment(e.date_start).format("MMM Do, YYYY");
-      let stime = moment(e.time_start, "HH:mm:ss").format("LT");
-      let eday = moment(e.date_end).format("MMM Do, YYYY");
-      let etime = moment(e.time_end, "HH:mm:ss").format("LT");
+      moment.locale();
+      let sday = moment(e.start, "YYYY-MM-DD HH:mm:ss").format("LLL");
+      let stime = moment(e.start, "YYYY-MM-DD HH:mm:ss").format("h:mm:ss a");
+      let eday = moment(e.end, "YYYY-MM-DD HH:mm:ss").format("MMM Do, YYYY");
+      let etime = moment(e.end, "YYYY-MM-DD HH:mm:ss").format("h:mm:ss a");
       return (
         <EventsCard
           key={i}
@@ -111,67 +133,37 @@ class MyCampaignEvents extends Component {
         />
       );
     });
+
+    console.log(`this is important`, this.props.events);
+
     return (
       <div>
+        <MyCalendar events={this.props.events} />
+
         <h1>Upcoming Events</h1>
-        {this.props.joined[0].role === "Admin" && (
-          <button onClick={e => this.handleCreate(e)}>Add an Event</button>
-        )}
+        {this.props.joined[0] &&
+          this.props.joined[0].role === "Admin" && (
+            <button onClick={e => this.handleCreate(e)}>Add an Event</button>
+          )}
 
         {this.state.isCreating ? (
           <div>
-            <form>
-              <input
-                onChange={e => this.handleEventName(e.target.value)}
-                placeholder="Event Name"
-                value={this.state.eventName}
-              />
-              <input
-                onChange={e => this.handleEventType(e.target.value)}
-                placeholder="Event Type"
-                value={this.state.eventType}
-              />
-              <input
-                onChange={e => this.handleEventType(e.target.value)}
-                placeholder="Event Type"
-                value={this.state.eventType}
-                type="date"
-              />
-              <DatePicker
-                selected={this.state.eventDate}
-                onChange={this.handleEventDate}
-                style={{ width: "100%" }}
-              />
-              <input type="time" />
-              <input
-                onChange={e => this.handleEventLocation(e.target.value)}
-                placeholder="Event Location"
-                value={this.state.value}
-              />
-              <input
-                onChange={e => this.handleEventAddress(e.target.value)}
-                placeholder="Event Address"
-                value={this.state.value}
-              />
-              <input
-                onChange={e => this.handleEventCity(e.target.value)}
-                placeholder="Event City"
-                value={this.state.value}
-              />
-              <input
-                onChange={e => this.handleEventState(e.target.value)}
-                placeholder="Event State"
-                value={this.state.value}
-              />
-              <input
-                onChange={e => this.handleEventZip(e.target.value)}
-                placeholder="Zip"
-                value={this.state.value}
-              />
-            </form>
+            <EventCreator campaign_id={this.props.joined[0].campaign_id} />
           </div>
         ) : null}
-        <ScheduledEvents />
+        <h2>Your Scheduled Events</h2>
+        {this.props.scheduled[0] ? (
+          this.props.scheduled.map((e, i) => {
+            return (
+              <div>
+                <ScheduledEvents key={i} name={e.event_name} date={e.start} />
+              </div>
+            );
+          })
+        ) : (
+          <h4>You have no events scheduled!</h4>
+        )}
+
         {!this.props.events.length ? (
           <h1>No Events Scheduled at this time.</h1>
         ) : (
